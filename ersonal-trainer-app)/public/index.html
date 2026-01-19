@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kleyman Performance Institute - Private Performance Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+        :root {
+            --ink: #0f1216;
+            --ink-soft: #1b2129;
+            --bone: #f7f4ef;
+            --mist: #ece6db;
+            --accent: #c2833b;
+            --accent-strong: #b16a22;
+            --accent-cool: #1d4f5a;
+            --line: rgba(15, 18, 22, 0.12);
+            --shadow: 0 20px 60px rgba(15, 18, 22, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(120deg, #f7f4ef 0%, #ede7dc 45%, #f4f1ea 100%);
+            color: var(--ink);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 15%, rgba(193, 131, 59, 0.18), transparent 50%),
+                radial-gradient(circle at 80% 0%, rgba(29, 79, 90, 0.16), transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(15, 18, 22, 0.08), transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+            gap: 1px;
+            background: rgba(15, 18, 22, 0.08);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: linear-gradient(165deg, #10141b 0%, #171d26 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 30px 22px;
+            overflow-y: auto;
+            max-height: 100vh;
+            color: #f3ede3;
+            position: relative;
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(194, 131, 59, 0.22), transparent 60%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .sidebar > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar label {
+            color: rgba(244, 230, 211, 0.8);
+        }
+
+        .sidebar input,
+        .sidebar select,
+        .sidebar textarea {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #f4e6d3;
+        }
+
+        .sidebar input:focus,
+        .sidebar select:focus,
+        .sidebar textarea:focus {
+            box-shadow: 0 0 0 3px rgba(194, 131, 59, 0.35);
+        }
+
+        .sidebar .btn-ghost {
+            background: rgba(255, 255, 255, 0.08);
+            color: #f4e6d3;
+        }
+
+        .sidebar-header {
+            margin-bottom: 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 16px;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Bodoni Moda', 'Times New Roman', serif;
+            font-size: 1.6em;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #f4e6d3;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.75em;
+            color: rgba(244, 230, 211, 0.7);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-new-client {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent) 0%, #e1b67c 100%);
+            color: #14171c;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85em;
+        }
+
+        .btn-new-client:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 35px rgba(194, 131, 59, 0.35);
+        }
+
+        .clients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .client-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .client-item:hover {
+            background: rgba(194, 131, 59, 0.16);
+            border-color: rgba(194, 131, 59, 0.5);
+        }
+
+        .client-item.active {
+            background: rgba(194, 131, 59, 0.24);
+            border-color: rgba(244, 230, 211, 0.7);
+            box-shadow: 0 10px 30px rgba(15, 18, 22, 0.3);
+        }
+
+        .client-item h3 {
+            font-size: 0.95em;
+            margin-bottom: 4px;
+            color: #f7ead6;
+        }
+
+        .client-item p {
+            font-size: 0.75em;
+            color: rgba(247, 234, 214, 0.7);
+        }
+
+        /* MAIN PANEL */
+        .main-panel {
+            background: var(--bone);
+            overflow-y: auto;
+            max-height: 100vh;
+            padding: 42px 50px 70px;
+            position: relative;
+        }
+
+        .main-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 244, 239, 0.7));
+            pointer-events: none;
+        }
+
+        .main-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 34px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .top-bar h1 {
+            font-family: 'Bodoni Moda', 'Times New Roman', serif;
+            font-size: 2.4em;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: rgba(15, 18, 22, 0.55);
+            font-size: 1.05em;
+        }
+
+        /* TABS */
+        .tab-navigation {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            background: rgba(15, 18, 22, 0.03);
+            border: 1px solid transparent;
+            color: rgba(15, 18, 22, 0.55);
+            padding: 12px 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 999px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            color: var(--ink);
+            border-color: rgba(194, 131, 59, 0.4);
+            background: rgba(194, 131, 59, 0.12);
+        }
+
+        .tab-btn.active {
+            color: var(--ink);
+            border-color: rgba(194, 131, 59, 0.7);
+            background: rgba(194, 131, 59, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(194, 131, 59, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: riseFade 0.5s ease;
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid rgba(15, 18, 22, 0.15);
+            color: var(--ink);
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(194, 131, 59, 0.6);
+            box-shadow: 0 0 0 3px rgba(194, 131, 59, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--accent) 0%, #e3b771 100%);
+            color: #14171c;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 35px rgba(194, 131, 59, 0.25);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-ghost {
+            background: rgba(15, 18, 22, 0.08);
+            color: var(--ink);
+        }
+
+        /* METRIC CARDS */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid rgba(15, 18, 22, 0.08);
+            padding: 18px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(15, 18, 22, 0.06);
+        }
+
+        .metric-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(15, 18, 22, 0.6);
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.6em;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* DATA LOGS */
+        .data-log-item {
+            background: #ffffff;
+            border-left: 4px solid var(--accent);
+            padding: 16px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 16px 35px rgba(15, 18, 22, 0.08);
+        }
+
+        .data-log-item h4 {
+            color: var(--ink);
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .data-log-item p {
+            font-size: 0.9em;
+            color: rgba(15, 18, 22, 0.72);
+            margin-bottom: 6px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e55c4b 0%, #b9433f 100%);
+            margin-top: 10px;
+            padding: 8px 15px;
+            font-size: 0.8em;
+        }
+
+        .btn-delete:hover {
+            box-shadow: 0 10px 30px rgba(185, 67, 63, 0.25);
+        }
+
+        /* INSIGHTS */
+        .insight-box {
+            background: rgba(29, 79, 90, 0.08);
+            border-left: 3px solid var(--accent-cool);
+            padding: 15px 18px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            color: #13414a;
+            font-size: 0.95em;
+        }
+
+        .warning-box {
+            background: rgba(194, 131, 59, 0.12);
+            border-left: 3px solid var(--accent-strong);
+            padding: 15px 18px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            color: #6f3f12;
+            font-size: 0.95em;
+        }
+
+        h2 {
+            font-family: 'Bodoni Moda', 'Times New Roman', serif;
+            font-size: 1.45em;
+            margin: 20px 0 16px 0;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        h3 {
+            font-size: 1em;
+            margin: 14px 0 10px 0;
+            color: var(--ink);
+        }
+
+        .report-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .report-header h3 {
+            font-family: 'Bodoni Moda', 'Times New Roman', serif;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+        }
+
+        .report-meta {
+            font-size: 0.85em;
+            color: rgba(15, 18, 22, 0.55);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .report-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(15, 18, 22, 0.08);
+            box-shadow: var(--shadow);
+        }
+
+        .report-card h4 {
+            font-size: 1em;
+            margin-bottom: 12px;
+            color: var(--ink);
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 18, 22, 0.04);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(15, 18, 22, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(15, 18, 22, 0.35);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes riseFade {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1100px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                max-height: none;
+            }
+
+            .main-panel {
+                max-height: none;
+                padding: 30px 24px 50px;
+            }
+
+            .tab-navigation {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .tab-navigation {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .top-bar h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Kleyman Performance Institute</h1>
+                <p>Private Performance Platform</p>
+            </div>
+
+            <button class="btn-new-client" onclick="showNewClientForm()">+ New Client</button>
+
+            <div id="newClientFormContainer" style="display:none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+                <h3 style="margin-bottom: 15px;">New Client Profile</h3>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="newClientName" placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="newClientEmail" placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="newClientAge" placeholder="25">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="newClientGender">
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="newClientHeight" placeholder="180">
+                </div>
+                <div class="form-group">
+                    <label>Target Weight (kg)</label>
+                    <input type="number" id="newClientWeight" placeholder="80">
+                </div>
+                <div class="form-group">
+                    <label>Sport/Activity</label>
+                    <select id="newClientSport">
+                        <option value="strength">Strength/Powerlifting</option>
+                        <option value="endurance">Endurance</option>
+                        <option value="mixed">Mixed/CrossFit</option>
+                        <option value="general">General Fitness</option>
+                    </select>
+                </div>
+                <button class="btn-block" onclick="createNewClient()" style="margin-bottom: 10px;">Create Profile</button>
+                <button class="btn-block btn-ghost" onclick="hideNewClientForm()">Cancel</button>
+            </div>
+
+            <div class="clients-list" id="clientsList"></div>
+        </div>
+
+        <!-- MAIN PANEL -->
+        <div class="main-panel">
+            <div id="noClient" class="empty-state">
+                <p>Select a client to begin</p>
+            </div>
+
+            <div id="clientPanel" style="display: none;">
+                <div class="top-bar">
+                    <h1 id="clientNameDisplay"></h1>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                    <button class="tab-btn" onclick="switchTab('training')">Training</button>
+                    <button class="tab-btn" onclick="switchTab('nutrition')">Nutrition</button>
+                    <button class="tab-btn" onclick="switchTab('body')">Body</button>
+                    <button class="tab-btn" onclick="switchTab('psychology')">Psychology</button>
+                    <button class="tab-btn" onclick="switchTab('recovery')">Recovery</button>
+                    <button class="tab-btn" onclick="switchTab('analytics')">Analytics</button>
+                </div>
+
+                <!-- OVERVIEW TAB -->
+                <div id="overview" class="tab-content active">
+                    <h2>Client Overview</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Age</div>
+                            <div class="metric-value" id="overviewAge">--</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Height</div>
+                            <div class="metric-value" id="overviewHeight">--</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Sport</div>
+                            <div class="metric-value" id="overviewSport">--</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Email</div>
+                            <div class="metric-value" id="overviewEmail" style="font-size: 0.9em;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRAINING TAB -->
+                <div id="training" class="tab-content">
+                    <h2>Training Log</h2>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="trainingDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Session Type</label>
+                        <select id="sessionType">
+                            <option value="strength">Strength</option>
+                            <option value="conditioning">Conditioning</option>
+                            <option value="mobility">Mobility</option>
+                            <option value="endurance">Endurance</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (min)</label>
+                        <input type="number" id="trainingDuration" placeholder="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Intensity (1-10)</label>
+                        <input type="number" id="trainingIntensity" min="1" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Exercises</label>
+                        <textarea id="trainingExercises" placeholder="List exercises..." rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Pre-Session Mood (1-10)</label>
+                        <input type="number" id="trainingPreMood" min="1" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Post-Session Mood (1-10)</label>
+                        <input type="number" id="trainingPostMood" min="1" max="10" placeholder="8">
+                    </div>
+                    <button onclick="logTraining()">Log Training Session</button>
+
+                    <h3 style="margin-top: 30px;">Recent Sessions</h3>
+                    <div id="trainingLogs"></div>
+                </div>
+
+                <!-- NUTRITION TAB -->
+                <div id="nutrition" class="tab-content">
+                    <h2>Nutrition Logging</h2>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="nutritionDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Meal Type</label>
+                        <select id="mealType">
+                            <option>Breakfast</option>
+                            <option>Lunch</option>
+                            <option>Dinner</option>
+                            <option>Snack</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Food Description</label>
+                        <input type="text" id="foodDescription" placeholder="e.g., Grilled chicken with brown rice">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Calories</label>
+                            <input type="number" id="calories" placeholder="500">
+                        </div>
+                        <div class="form-group">
+                            <label>Protein (g)</label>
+                            <input type="number" id="protein" placeholder="30">
+                        </div>
+                        <div class="form-group">
+                            <label>Carbs (g)</label>
+                            <input type="number" id="carbs" placeholder="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Fat (g)</label>
+                            <input type="number" id="fat" placeholder="15">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hydration (L)</label>
+                        <input type="number" id="hydration" step="0.1" placeholder="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Appetite Level (1-10)</label>
+                        <input type="number" id="appetite" min="1" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Psychological Driver</label>
+                        <select id="psychDriver">
+                            <option>Performance</option>
+                            <option>Stress Eating</option>
+                            <option>Boredom</option>
+                            <option>Social</option>
+                        </select>
+                    </div>
+                    <button onclick="logNutrition()">Log Nutrition</button>
+
+                    <h3 style="margin-top: 30px;">Nutrition History</h3>
+                    <div id="nutritionLogs"></div>
+                </div>
+
+                <!-- BODY METRICS TAB -->
+                <div id="body" class="tab-content">
+                    <h2>Body Composition</h2>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="bodyDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" id="weight" step="0.1" placeholder="80">
+                    </div>
+                    <div class="form-group">
+                        <label>Body Fat (%)</label>
+                        <input type="number" id="bodyFat" step="0.1" placeholder="15">
+                    </div>
+                    <button onclick="logBodyMetrics()">Log Metrics</button>
+
+                    <h3 style="margin-top: 30px;">Body Metrics History</h3>
+                    <div id="bodyLogs"></div>
+
+                    <h3 style="margin-top: 30px;">BMI Analysis</h3>
+                    <div id="bmiAnalysis"></div>
+                </div>
+
+                <!-- PSYCHOLOGY TAB -->
+                <div id="psychology" class="tab-content">
+                    <h2>Psychological State</h2>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="psychDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Mood (1-10)</label>
+                        <input type="number" id="mood" min="1" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Stress Level (1-10)</label>
+                        <input type="number" id="stress" min="1" max="10" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" id="sleepHours" step="0.5" placeholder="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Sleep Quality (1-10)</label>
+                        <input type="number" id="sleepQuality" min="1" max="10" placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Motivation (1-10)</label>
+                        <input type="number" id="motivation" min="1" max="10" placeholder="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Nervous System State</label>
+                        <select id="nervousSystem">
+                            <option>Sympathetic (Activated)</option>
+                            <option>Balanced</option>
+                            <option>Parasympathetic (Relaxed)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Personal Life Context</label>
+                        <textarea id="lifeContext" placeholder="Any significant life events or stressors..." rows="3"></textarea>
+                    </div>
+                    <button onclick="logPsychology()">Log Psychological State</button>
+
+                    <h3 style="margin-top: 30px;">Psychological History</h3>
+                    <div id="psychologyLogs"></div>
+
+                    <h3 style="margin-top: 30px;">14-Day Trends & Recommendations</h3>
+                    <div id="psychTrends"></div>
+                </div>
+
+                <!-- RECOVERY TAB -->
+                <div id="recovery" class="tab-content">
+                    <h2>Recovery Metrics</h2>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="recoveryDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Readiness Score (1-10)</label>
+                        <input type="number" id="readiness" min="1" max="10" placeholder="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Sleep Duration (hours)</label>
+                        <input type="number" id="recoverySleepDuration" step="0.5" placeholder="7.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Sleep Quality</label>
+                        <select id="recoverySleepQuality">
+                            <option value="poor">Poor</option>
+                            <option value="fair">Fair</option>
+                            <option value="good">Good</option>
+                            <option value="excellent">Excellent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Soreness Level (1-10)</label>
+                        <input type="number" id="soreness" min="1" max="10" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Recovery Methods Used</label>
+                        <textarea id="recoveryMethods" placeholder="Foam roll, ice bath, massage, etc..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Injury Notes</label>
+                        <textarea id="injuryNotes" placeholder="Any aches, pain, or concerns..." rows="3"></textarea>
+                    </div>
+                    <button onclick="logRecovery()">Log Recovery</button>
+
+                    <h3 style="margin-top: 30px;">Recovery History</h3>
+                    <div id="recoveryLogs"></div>
+
+                    <h3 style="margin-top: 30px;">Training-Recovery Analysis</h3>
+                    <div id="recoveryAnalysis"></div>
+                </div>
+
+                <!-- ANALYTICS TAB -->
+                <div id="analytics" class="tab-content">
+                    <h2>Integrated Performance Report</h2>
+                    <button id="generateReportBtn" class="btn-block" onclick="generateReport()" style="margin-bottom: 20px;">Generate Full Report</button>
+                    <div id="performanceReport"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+        let currentClientId = null;
+        let clients = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setDefaultDates();
+            loadClients();
+        });
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingDate').value = today;
+            document.getElementById('nutritionDate').value = today;
+            document.getElementById('bodyDate').value = today;
+            document.getElementById('psychDate').value = today;
+            document.getElementById('recoveryDate').value = today;
+        }
+
+        // ===== CLIENT MANAGEMENT =====
+        async function loadClients() {
+            try {
+                const res = await fetch(`${API}/clients`);
+                clients = await res.json();
+                renderClientsList();
+            } catch (err) {
+                console.error('Error loading clients:', err);
+            }
+        }
+
+        function renderClientsList() {
+            const list = document.getElementById('clientsList');
+            list.innerHTML = '';
+            clients.forEach(client => {
+                const div = document.createElement('div');
+                div.className = `client-item ${currentClientId === client.id ? 'active' : ''}`;
+                div.onclick = () => selectClient(client.id);
+                div.innerHTML = `
+                    <h3>${client.name}</h3>
+                    <p>${client.email}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function selectClient(clientId) {
+            currentClientId = clientId;
+            const client = clients.find(c => c.id === clientId);
+            displayClientPanel(client);
+            renderClientsList();
+        }
+
+        function displayClientPanel(client) {
+            document.getElementById('noClient').style.display = 'none';
+            document.getElementById('clientPanel').style.display = 'block';
+            document.getElementById('clientNameDisplay').textContent = client.name;
+            document.getElementById('overviewAge').textContent = client.age;
+            document.getElementById('overviewHeight').textContent = client.height + ' cm';
+            document.getElementById('overviewSport').textContent = client.sport || 'N/A';
+            document.getElementById('overviewEmail').textContent = client.email;
+            
+            loadTrainingLogs(client.id);
+            loadNutritionLogs(client.id);
+            loadBodyLogs(client.id);
+            loadPsychologyLogs(client.id);
+            loadRecoveryLogs(client.id);
+            loadBMIAnalysis(client.id);
+            loadPsychTrends(client.id);
+            loadRecoveryAnalysis(client.id);
+        }
+
+        function showNewClientForm() {
+            document.getElementById('newClientFormContainer').style.display = 'block';
+        }
+
+        function hideNewClientForm() {
+            document.getElementById('newClientFormContainer').style.display = 'none';
+        }
+
+        async function createNewClient() {
+            const name = document.getElementById('newClientName').value;
+            const email = document.getElementById('newClientEmail').value;
+            const age = parseInt(document.getElementById('newClientAge').value);
+            const gender = document.getElementById('newClientGender').value;
+            const height = parseInt(document.getElementById('newClientHeight').value);
+            const targetWeight = parseInt(document.getElementById('newClientWeight').value);
+            const sport = document.getElementById('newClientSport').value;
+
+            if (!name || !email || !age || !height) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/clients`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name, email, age, gender, height, targetWeight, sport,
+                        athleteProfile: { sport, targetWeight }
+                    })
+                });
+                const newClient = await res.json();
+                hideNewClientForm();
+                document.getElementById('newClientName').value = '';
+                document.getElementById('newClientEmail').value = '';
+                document.getElementById('newClientAge').value = '';
+                document.getElementById('newClientHeight').value = '';
+                document.getElementById('newClientWeight').value = '';
+                loadClients();
+                selectClient(newClient.id);
+            } catch (err) {
+                console.error('Error creating client:', err);
+                alert('Error creating client');
+            }
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== TRAINING =====
+        function mapIntensity(score) {
+            if (!Number.isFinite(score)) return 'moderate';
+            if (score <= 3) return 'low';
+            if (score <= 6) return 'moderate';
+            if (score <= 8) return 'high';
+            return 'very-high';
+        }
+
+        async function logTraining() {
+            if (!currentClientId) return;
+            const intensityScore = parseInt(document.getElementById('trainingIntensity').value);
+            const exercisesRaw = document.getElementById('trainingExercises').value;
+            const exercises = exercisesRaw
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map(name => ({ name }));
+            const data = {
+                date: document.getElementById('trainingDate').value,
+                trainingType: document.getElementById('sessionType').value,
+                duration: parseInt(document.getElementById('trainingDuration').value),
+                intensity: mapIntensity(intensityScore),
+                exercises,
+                preTrainingMood: parseInt(document.getElementById('trainingPreMood').value),
+                preTrainingStress: null,
+                postTrainingMood: parseInt(document.getElementById('trainingPostMood').value),
+                postTrainingEnergy: null,
+                notes: '',
+                personalContext: ''
+            };
+
+            try {
+                await fetch(`${API}/clients/${currentClientId}/training-logs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('trainingExercises').value = '';
+                loadTrainingLogs(currentClientId);
+            } catch (err) {
+                console.error('Error logging training:', err);
+            }
+        }
+
+        async function loadTrainingLogs(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/training-logs`);
+                const logs = await res.json();
+                const html = logs.map(log => `
+                    <div class="data-log-item">
+                        <h4>${log.date} - ${log.trainingType}</h4>
+                        <p>Duration: ${log.duration}min | Intensity: ${log.intensity}</p>
+                        <p>Exercises: ${(log.exercises || []).map(ex => ex.name).join(', ') || 'N/A'}</p>
+                        <p>Mood: ${log.preTrainingMood ?? 'N/A'}/10 ? ${log.postTrainingMood ?? 'N/A'}/10</p>
+                        <button class="btn-delete" onclick="deleteTrainingLog('${clientId}', '${log.id}')">Delete</button>
+                    </div>
+                `).join('');
+                document.getElementById('trainingLogs').innerHTML = html || '<p style="color: #666;">No training logs</p>';
+            } catch (err) {
+                console.error('Error loading training logs:', err);
+            }
+        }
+
+        async function deleteTrainingLog(clientId, logId) {
+            if (!confirm('Delete this training log?')) return;
+            try {
+                await fetch(`${API}/clients/${clientId}/training-logs/${logId}`, { method: 'DELETE' });
+                loadTrainingLogs(clientId);
+            } catch (err) {
+                console.error('Error deleting training log:', err);
+            }
+        }
+
+        // ===== NUTRITION =====
+        async function logNutrition() {
+            if (!currentClientId) return;
+            const data = {
+                date: document.getElementById('nutritionDate').value,
+                mealType: document.getElementById('mealType').value,
+                food: document.getElementById('foodDescription').value,
+                calories: parseInt(document.getElementById('calories').value),
+                protein: parseInt(document.getElementById('protein').value),
+                carbs: parseInt(document.getElementById('carbs').value),
+                fat: parseInt(document.getElementById('fat').value),
+                hydration: parseFloat(document.getElementById('hydration').value),
+                appetite: parseInt(document.getElementById('appetite').value),
+                psychDriver: document.getElementById('psychDriver').value
+            };
+
+            try {
+                await fetch(`${API}/clients/${currentClientId}/nutrition-logs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('foodDescription').value = '';
+                loadNutritionLogs(currentClientId);
+            } catch (err) {
+                console.error('Error logging nutrition:', err);
+            }
+        }
+
+        async function loadNutritionLogs(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/nutrition-logs`);
+                const logs = await res.json();
+                const html = logs.map(log => `
+                    <div class="data-log-item">
+                        <h4>${log.date} - ${log.mealType}</h4>
+                        <p>${log.food}</p>
+                        <p>Calories: ${log.calories} | Protein: ${log.protein}g | Carbs: ${log.carbs}g | Fat: ${log.fat}g</p>
+                        <p>Hydration: ${log.hydration}L | Appetite: ${log.appetite}/10 | Driver: ${log.psychDriver}</p>
+                        <button class="btn-delete" onclick="deleteNutritionLog('${clientId}', '${log.id}')">Delete</button>
+                    </div>
+                `).join('');
+                document.getElementById('nutritionLogs').innerHTML = html || '<p style="color: #666;">No nutrition logs</p>';
+            } catch (err) {
+                console.error('Error loading nutrition logs:', err);
+            }
+        }
+
+        async function deleteNutritionLog(clientId, logId) {
+            if (!confirm('Delete this nutrition log?')) return;
+            try {
+                await fetch(`${API}/clients/${clientId}/nutrition-logs/${logId}`, { method: 'DELETE' });
+                loadNutritionLogs(clientId);
+            } catch (err) {
+                console.error('Error deleting nutrition log:', err);
+            }
+        }
+
+        // ===== BODY METRICS =====
+        async function logBodyMetrics() {
+            if (!currentClientId) return;
+            const data = {
+                date: document.getElementById('bodyDate').value,
+                weight: parseFloat(document.getElementById('weight').value),
+                bodyFat: parseFloat(document.getElementById('bodyFat').value)
+            };
+
+            try {
+                await fetch(`${API}/clients/${currentClientId}/body-metrics`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('weight').value = '';
+                loadBodyLogs(currentClientId);
+                loadBMIAnalysis(currentClientId);
+            } catch (err) {
+                console.error('Error logging body metrics:', err);
+            }
+        }
+
+        async function loadBodyLogs(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/body-metrics`);
+                const logs = await res.json();
+                const html = logs.map(log => `
+                    <div class="data-log-item">
+                        <h4>${log.date}</h4>
+                        <p>Weight: ${log.weight}kg | Body Fat: ${log.bodyFat}%</p>
+                        <button class="btn-delete" onclick="deleteBodyLog('${clientId}', '${log.id}')">Delete</button>
+                    </div>
+                `).join('');
+                document.getElementById('bodyLogs').innerHTML = html || '<p style="color: #666;">No body metrics</p>';
+            } catch (err) {
+                console.error('Error loading body logs:', err);
+            }
+        }
+
+        async function deleteBodyLog(clientId, logId) {
+            if (!confirm('Delete this metric?')) return;
+            try {
+                await fetch(`${API}/clients/${clientId}/body-metrics/${logId}`, { method: 'DELETE' });
+                loadBodyLogs(clientId);
+            } catch (err) {
+                console.error('Error deleting body log:', err);
+            }
+        }
+
+        async function loadBMIAnalysis(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/bmi-analysis`);
+                const analysis = await res.json();
+                let html = `
+                    <div class="metric-card">
+                        <div class="metric-label">Current BMI</div>
+                        <div class="metric-value">${analysis.bmi?.toFixed(1) || 'N/A'}</div>
+                    </div>
+                `;
+                if (analysis.assessment) {
+                    html += `<div class="insight-box"><strong>Assessment:</strong> ${analysis.assessment}</div>`;
+                }
+                if (analysis.athleteGuidance) {
+                    html += `<div class="insight-box"><strong>Athlete Guidance:</strong> ${analysis.athleteGuidance}</div>`;
+                }
+                document.getElementById('bmiAnalysis').innerHTML = html || 'No BMI data';
+            } catch (err) {
+                console.error('Error loading BMI analysis:', err);
+            }
+        }
+
+        // ===== PSYCHOLOGY =====
+        async function logPsychology() {
+            if (!currentClientId) return;
+            const data = {
+                date: document.getElementById('psychDate').value,
+                mood: parseInt(document.getElementById('mood').value),
+                stress: parseInt(document.getElementById('stress').value),
+                sleepHours: parseFloat(document.getElementById('sleepHours').value),
+                sleepQuality: parseInt(document.getElementById('sleepQuality').value),
+                motivation: parseInt(document.getElementById('motivation').value),
+                nervousSystem: document.getElementById('nervousSystem').value,
+                lifeContext: document.getElementById('lifeContext').value
+            };
+
+            try {
+                await fetch(`${API}/clients/${currentClientId}/psychological-state`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('lifeContext').value = '';
+                loadPsychologyLogs(currentClientId);
+                loadPsychTrends(currentClientId);
+            } catch (err) {
+                console.error('Error logging psychology:', err);
+            }
+        }
+
+        async function loadPsychologyLogs(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/psychological-state`);
+                const logs = await res.json();
+                const html = logs.map(log => `
+                    <div class="data-log-item">
+                        <h4>${log.date}</h4>
+                        <p>Mood: ${log.mood}/10 | Stress: ${log.stress}/10 | Motivation: ${log.motivation}/10</p>
+                        <p>Sleep: ${log.sleepHours}h (Quality: ${log.sleepQuality}/10) | NS: ${log.nervousSystem}</p>
+                        ${log.lifeContext ? `<p>Context: ${log.lifeContext}</p>` : ''}
+                        <button class="btn-delete" onclick="deletePsychologyLog('${clientId}', '${log.id}')">Delete</button>
+                    </div>
+                `).join('');
+                document.getElementById('psychologyLogs').innerHTML = html || '<p style="color: #666;">No psychology logs</p>';
+            } catch (err) {
+                console.error('Error loading psychology logs:', err);
+            }
+        }
+
+        async function deletePsychologyLog(clientId, logId) {
+            if (!confirm('Delete this entry?')) return;
+            try {
+                await fetch(`${API}/clients/${clientId}/psychological-state/${logId}`, { method: 'DELETE' });
+                loadPsychologyLogs(clientId);
+            } catch (err) {
+                console.error('Error deleting psychology log:', err);
+            }
+        }
+
+        async function loadPsychTrends(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/psychological-trends?daysBack=14`);
+                const trends = await res.json();
+                let html = '<div class="metrics-grid">';
+                html += `<div class="metric-card"><div class="metric-label">Avg Mood</div><div class="metric-value">${trends.avgMood?.toFixed(1) || 'N/A'}</div></div>`;
+                html += `<div class="metric-card"><div class="metric-label">Avg Stress</div><div class="metric-value">${trends.avgStress?.toFixed(1) || 'N/A'}</div></div>`;
+                html += `<div class="metric-card"><div class="metric-label">Avg Sleep</div><div class="metric-value">${trends.avgSleep?.toFixed(1) || 'N/A'}h</div></div>`;
+                html += `<div class="metric-card"><div class="metric-label">Avg Motivation</div><div class="metric-value">${trends.avgMotivation?.toFixed(1) || 'N/A'}</div></div>`;
+                html += '</div>';
+                if (trends.recommendations) {
+                    html += `<div class="insight-box"><strong>Recommendation:</strong> ${trends.recommendations}</div>`;
+                }
+                document.getElementById('psychTrends').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading psychological trends:', err);
+            }
+        }
+
+        // ===== RECOVERY =====
+        async function logRecovery() {
+            if (!currentClientId) return;
+            const data = {
+                date: document.getElementById('recoveryDate').value,
+                readiness: parseInt(document.getElementById('readiness').value),
+                sleepQuality: parseInt(document.getElementById('recoverySleep').value),
+                soreness: parseInt(document.getElementById('soreness').value),
+                recoveryMethods: document.getElementById('recoveryMethods').value,
+                injuryNotes: document.getElementById('injuryNotes').value
+            };
+
+            try {
+                await fetch(`${API}/clients/${currentClientId}/recovery-logs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                document.getElementById('recoveryMethods').value = '';
+                document.getElementById('injuryNotes').value = '';
+                loadRecoveryLogs(currentClientId);
+                loadRecoveryAnalysis(currentClientId);
+            } catch (err) {
+                console.error('Error logging recovery:', err);
+            }
+        }
+
+        async function loadRecoveryLogs(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/recovery-logs`);
+                const logs = await res.json();
+                const html = logs.map(log => `
+                    <div class="data-log-item">
+                        <h4>${log.date}</h4>
+                        <p>Readiness: ${log.readiness}/10 | Sleep Quality: ${log.sleepQuality}/10 | Soreness: ${log.soreness}/10</p>
+                        <p>Methods: ${log.recoveryMethods}</p>
+                        ${log.injuryNotes ? `<p>Notes: ${log.injuryNotes}</p>` : ''}
+                        <button class="btn-delete" onclick="deleteRecoveryLog('${clientId}', '${log.id}')">Delete</button>
+                    </div>
+                `).join('');
+                document.getElementById('recoveryLogs').innerHTML = html || '<p style="color: #666;">No recovery logs</p>';
+            } catch (err) {
+                console.error('Error loading recovery logs:', err);
+            }
+        }
+
+        async function deleteRecoveryLog(clientId, logId) {
+            if (!confirm('Delete this recovery log?')) return;
+            try {
+                await fetch(`${API}/clients/${clientId}/recovery-logs/${logId}`, { method: 'DELETE' });
+                loadRecoveryLogs(clientId);
+            } catch (err) {
+                console.error('Error deleting recovery log:', err);
+            }
+        }
+
+        async function loadRecoveryAnalysis(clientId) {
+            try {
+                const res = await fetch(`${API}/clients/${clientId}/recovery-analysis?daysBack=30`);
+                const analysis = await res.json();
+                let html = '<div class="metrics-grid">';
+                html += `<div class="metric-card"><div class="metric-label">Avg Readiness</div><div class="metric-value">${analysis.avgReadiness?.toFixed(1) || 'N/A'}</div></div>`;
+                html += `<div class="metric-card"><div class="metric-label">Avg Sleep Quality</div><div class="metric-value">${analysis.avgSleep?.toFixed(1) || 'N/A'}</div></div>`;
+                html += '</div>';
+                if (analysis.insights) {
+                    html += `<div class="insight-box"><strong>Insights:</strong> ${analysis.insights}</div>`;
+                }
+                if (analysis.recommendations) {
+                    html += `<div class="insight-box"><strong>Recommendations:</strong> ${analysis.recommendations}</div>`;
+                }
+                document.getElementById('recoveryAnalysis').innerHTML = html;
+            } catch (err) {
+                console.error('Error loading recovery analysis:', err);
+            }
+        }
+
+        // ===== ANALYTICS =====
+        async function generateReport() {
+            if (!currentClientId) return;
+            try {
+                const button = document.getElementById('generateReportBtn');
+                const reportContainer = document.getElementById('performanceReport');
+
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Generating...';
+                }
+                reportContainer.innerHTML = '<div class="insight-box">Building your report...</div>';
+
+                const res = await fetch(`${API}/clients/${currentClientId}/performance-report`);
+                if (!res.ok) {
+                    throw new Error('Report request failed');
+                }
+                const report = await res.json();
+                const sections = report.sections || {};
+                const generatedAt = report.generatedAt ? new Date(report.generatedAt).toLocaleString() : 'Just now';
+
+                const cards = [];
+
+                if (sections.bodyComposition) {
+                    const bc = sections.bodyComposition;
+                    cards.push(`
+                        <div class="report-card">
+                            <h4>${bc.title}</h4>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">BMI</div>
+                                    <div class="metric-value">${bc.bmi ?? 'N/A'}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Current Weight</div>
+                                    <div class="metric-value">${bc.currentWeight ?? 'N/A'} kg</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Target Weight</div>
+                                    <div class="metric-value">${bc.targetWeight ?? 'N/A'} kg</div>
+                                </div>
+                            </div>
+                            <div class="insight-box"><strong>Assessment:</strong> ${bc.assessment}</div>
+                            <div class="report-meta">${bc.note || ''}</div>
+                        </div>
+                    `);
+                }
+
+                if (sections.psychologicalState) {
+                    const ps = sections.psychologicalState;
+                    cards.push(`
+                        <div class="report-card">
+                            <h4>${ps.title}</h4>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">Avg Mood</div>
+                                    <div class="metric-value">${ps.avgMood ?? 'N/A'}/10</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Avg Stress</div>
+                                    <div class="metric-value">${ps.avgStress ?? 'N/A'}/10</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Avg Sleep</div>
+                                    <div class="metric-value">${ps.avgSleep ?? 'N/A'}h</div>
+                                </div>
+                            </div>
+                            <div class="warning-box"><strong>Recommendation:</strong> ${ps.recommendation}</div>
+                        </div>
+                    `);
+                }
+
+                if (sections.recoveryAnalysis) {
+                    const ra = sections.recoveryAnalysis;
+                    cards.push(`
+                        <div class="report-card">
+                            <h4>${ra.title}</h4>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">High Intensity Sessions</div>
+                                    <div class="metric-value">${ra.highIntensitySessions ?? 'N/A'}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Avg Recovery Score</div>
+                                    <div class="metric-value">${ra.avgRecoveryScore ?? 'N/A'}/10</div>
+                                </div>
+                            </div>
+                            <div class="insight-box"><strong>Analysis:</strong> ${ra.insight}</div>
+                        </div>
+                    `);
+                }
+
+                let html = `
+                    <div class="report-header">
+                        <h3>Performance Report</h3>
+                        <div class="report-meta">Generated: ${generatedAt}</div>
+                    </div>
+                `;
+
+                if (cards.length) {
+                    html += `<div class="report-grid">${cards.join('')}</div>`;
+                } else {
+                    html += '<div class="empty-state">Log body metrics, psychology, or recovery data to generate this report.</div>';
+                }
+
+                reportContainer.innerHTML = html;
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Generate Full Report';
+                }
+            } catch (err) {
+                console.error('Error generating report:', err);
+                const reportContainer = document.getElementById('performanceReport');
+                reportContainer.innerHTML = '<div class="warning-box">Unable to generate the report. Log data and try again.</div>';
+                const button = document.getElementById('generateReportBtn');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Generate Full Report';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
